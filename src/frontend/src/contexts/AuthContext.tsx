@@ -13,6 +13,7 @@ export interface User {
   username: string;
   email: string;
   ign: string;
+  avatarDataUrl?: string;
   role: "player" | "vip" | "mvip" | "sword" | "immortal";
   purchasedRanks: string[];
   isAdmin?: boolean;
@@ -34,6 +35,11 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   purchaseRank: (rankName: string) => void;
+  updateProfile: (data: {
+    username?: string;
+    ign?: string;
+    avatarDataUrl?: string;
+  }) => Promise<void>;
 }
 
 const USERS_KEY = "swordmc_users";
@@ -184,6 +190,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }, []);
 
+  const updateProfile = useCallback(
+    async (data: {
+      username?: string;
+      ign?: string;
+      avatarDataUrl?: string;
+    }): Promise<void> => {
+      setUser((prev) => {
+        if (!prev) return prev;
+        const merged: User = {
+          ...prev,
+          ...(data.username !== undefined ? { username: data.username } : {}),
+          ...(data.ign !== undefined ? { ign: data.ign } : {}),
+          ...(data.avatarDataUrl !== undefined
+            ? { avatarDataUrl: data.avatarDataUrl }
+            : {}),
+        };
+
+        // Update stored user record
+        const users = getStoredUsers();
+        const idx = users.findIndex(
+          (u) => u.email.toLowerCase() === merged.email.toLowerCase(),
+        );
+        if (idx !== -1) {
+          users[idx] = { ...users[idx], ...merged };
+          saveUsers(users);
+        }
+
+        saveSession(merged);
+        return merged;
+      });
+    },
+    [],
+  );
+
   const purchaseRank = useCallback((rankName: string) => {
     setUser((prev) => {
       if (!prev) return prev;
@@ -238,6 +278,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login,
         logout,
         purchaseRank,
+        updateProfile,
       }}
     >
       {children}

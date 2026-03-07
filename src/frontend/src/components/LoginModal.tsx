@@ -1,13 +1,6 @@
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Eye, EyeOff, Loader2, LogIn } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Eye, EyeOff, Loader2, Lock, Mail, User } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useAuth } from "../contexts/AuthContext";
@@ -29,6 +22,7 @@ export function LoginModal({ open, onClose, onGoToRegister }: LoginModalProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -73,6 +67,7 @@ export function LoginModal({ open, onClose, onGoToRegister }: LoginModalProps) {
     setPassword("");
     setErrors({});
     setShowPassword(false);
+    setRememberMe(false);
     onClose();
   };
 
@@ -80,78 +75,106 @@ export function LoginModal({ open, onClose, onGoToRegister }: LoginModalProps) {
     <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
       <DialogContent
         data-ocid="login.modal"
-        className="bg-card border border-border text-foreground max-w-md w-full p-0 overflow-hidden"
+        className="p-0 border-0 shadow-2xl overflow-hidden max-w-sm w-full"
+        style={{
+          background:
+            "linear-gradient(160deg, #e8a0d4 0%, #c78dce 30%, #9fc8e8 70%, #a8dde0 100%)",
+        }}
       >
-        {/* Header accent */}
-        <div className="h-1 w-full bg-gradient-to-r from-transparent via-accent to-transparent" />
+        {/* Close button is rendered by DialogContent automatically */}
+        <div className="flex flex-col items-center px-8 pt-10 pb-8">
+          {/* User avatar icon */}
+          <div
+            className="w-24 h-24 rounded-full flex items-center justify-center mb-4"
+            style={{
+              border: "3px solid rgba(255,255,255,0.75)",
+              background: "rgba(255,255,255,0.15)",
+              backdropFilter: "blur(4px)",
+            }}
+          >
+            <User
+              className="w-12 h-12"
+              style={{ color: "rgba(255,255,255,0.90)", strokeWidth: 1.5 }}
+            />
+          </div>
 
-        <div className="p-6">
-          <DialogHeader className="mb-5">
-            <div className="flex items-center gap-3 mb-1">
-              <div className="w-10 h-10 rounded-lg bg-accent/15 border border-accent/30 flex items-center justify-center">
-                <LogIn className="w-5 h-5 text-accent" />
-              </div>
-              <DialogTitle className="font-display font-extrabold text-2xl text-foreground">
-                Login
-              </DialogTitle>
-            </div>
-            <p className="font-body text-sm text-muted-foreground">
-              Sign in to your Sword MC account.
-            </p>
-          </DialogHeader>
+          {/* Title */}
+          <h2
+            className="text-2xl font-bold mb-8 tracking-wide"
+            style={{
+              fontFamily: '"Bricolage Grotesque", sans-serif',
+              color: "rgba(255,255,255,0.95)",
+              textShadow: "0 1px 4px rgba(0,0,0,0.15)",
+            }}
+          >
+            User Login
+          </h2>
 
+          {/* Form */}
           <form
             onSubmit={handleSubmit}
-            className="flex flex-col gap-4"
+            className="w-full flex flex-col gap-5"
             noValidate
           >
-            {/* Email */}
-            <div className="flex flex-col gap-1.5">
-              <Label
-                htmlFor="login-email"
-                className="font-body text-sm font-medium text-foreground/80"
+            {/* Email field */}
+            <div className="flex flex-col gap-1">
+              <div
+                className="flex items-center gap-3 pb-1"
+                style={{ borderBottom: "1.5px solid rgba(255,255,255,0.70)" }}
               >
-                Email <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                id="login-email"
-                data-ocid="login.email_input"
-                type="email"
-                placeholder="player@example.com"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  if (errors.email)
-                    setErrors((prev) => ({ ...prev, email: undefined }));
-                }}
-                autoComplete="email"
-                className="bg-input border-border focus:border-accent/60 font-body"
-                disabled={isSubmitting}
-              />
+                <Mail
+                  className="w-4 h-4 flex-shrink-0"
+                  style={{ color: "rgba(255,255,255,0.80)" }}
+                />
+                <input
+                  id="login-email"
+                  data-ocid="login.email_input"
+                  type="email"
+                  placeholder="Email ID"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (errors.email)
+                      setErrors((prev) => ({ ...prev, email: undefined }));
+                  }}
+                  autoComplete="email"
+                  disabled={isSubmitting}
+                  className="flex-1 bg-transparent outline-none text-sm placeholder:text-white/60"
+                  style={{
+                    color: "rgba(255,255,255,0.95)",
+                    fontFamily: '"Outfit", sans-serif',
+                  }}
+                />
+              </div>
               {errors.email && (
                 <p
                   data-ocid="login.email_input.error_state"
-                  className="text-xs text-destructive font-body"
+                  className="text-xs mt-0.5"
+                  style={{
+                    color: "rgba(255,255,255,0.90)",
+                    fontFamily: '"Outfit", sans-serif',
+                  }}
                 >
                   {errors.email}
                 </p>
               )}
             </div>
 
-            {/* Password */}
-            <div className="flex flex-col gap-1.5">
-              <Label
-                htmlFor="login-password"
-                className="font-body text-sm font-medium text-foreground/80"
+            {/* Password field */}
+            <div className="flex flex-col gap-1">
+              <div
+                className="flex items-center gap-3 pb-1"
+                style={{ borderBottom: "1.5px solid rgba(255,255,255,0.70)" }}
               >
-                Password <span className="text-destructive">*</span>
-              </Label>
-              <div className="relative">
-                <Input
+                <Lock
+                  className="w-4 h-4 flex-shrink-0"
+                  style={{ color: "rgba(255,255,255,0.80)" }}
+                />
+                <input
                   id="login-password"
                   data-ocid="login.password_input"
                   type={showPassword ? "text" : "password"}
-                  placeholder="Your password"
+                  placeholder="Password"
                   value={password}
                   onChange={(e) => {
                     setPassword(e.target.value);
@@ -159,13 +182,18 @@ export function LoginModal({ open, onClose, onGoToRegister }: LoginModalProps) {
                       setErrors((prev) => ({ ...prev, password: undefined }));
                   }}
                   autoComplete="current-password"
-                  className="bg-input border-border focus:border-accent/60 font-body pr-10"
                   disabled={isSubmitting}
+                  className="flex-1 bg-transparent outline-none text-sm placeholder:text-white/60"
+                  style={{
+                    color: "rgba(255,255,255,0.95)",
+                    fontFamily: '"Outfit", sans-serif',
+                  }}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  className="flex-shrink-0 transition-opacity hover:opacity-80"
+                  style={{ color: "rgba(255,255,255,0.75)" }}
                   aria-label={showPassword ? "Hide password" : "Show password"}
                   tabIndex={-1}
                 >
@@ -179,36 +207,79 @@ export function LoginModal({ open, onClose, onGoToRegister }: LoginModalProps) {
               {errors.password && (
                 <p
                   data-ocid="login.password_input.error_state"
-                  className="text-xs text-destructive font-body"
+                  className="text-xs mt-0.5"
+                  style={{
+                    color: "rgba(255,255,255,0.90)",
+                    fontFamily: '"Outfit", sans-serif',
+                  }}
                 >
                   {errors.password}
                 </p>
               )}
             </div>
 
-            {/* Submit */}
-            <Button
+            {/* Remember me + Forgot password */}
+            <div className="flex items-center justify-between mt-1">
+              <label
+                htmlFor="login-remember"
+                className="flex items-center gap-2 cursor-pointer select-none"
+                style={{ fontFamily: '"Outfit", sans-serif' }}
+              >
+                <Checkbox
+                  id="login-remember"
+                  data-ocid="login.remember_checkbox"
+                  checked={rememberMe}
+                  onCheckedChange={(v) => setRememberMe(!!v)}
+                  className="border-white/70 data-[state=checked]:bg-white/20 data-[state=checked]:border-white"
+                />
+                <span
+                  className="text-xs"
+                  style={{ color: "rgba(255,255,255,0.88)" }}
+                >
+                  Remember me
+                </span>
+              </label>
+              <button
+                type="button"
+                data-ocid="login.forgot_password_button"
+                className="text-xs italic transition-opacity hover:opacity-75"
+                style={{
+                  color: "rgba(255,255,255,0.88)",
+                  fontFamily: '"Outfit", sans-serif',
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                }}
+                onClick={() => toast.info("Password reset coming soon!")}
+              >
+                Forgot Password?
+              </button>
+            </div>
+
+            {/* LOGIN button */}
+            <button
               type="submit"
               data-ocid="login.submit_button"
               disabled={isSubmitting}
-              className="w-full mt-1 font-display font-bold tracking-wide bg-accent text-accent-foreground hover:bg-accent/90 transition-all"
+              className="w-full py-2.5 mt-2 rounded font-bold text-sm tracking-widest uppercase transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-2"
+              style={{
+                background: "#1a2a4a",
+                color: "#ffffff",
+                fontFamily: '"Bricolage Grotesque", sans-serif',
+                letterSpacing: "0.12em",
+              }}
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin" />
                   Signing in…
                 </>
               ) : (
-                "Sign In"
+                "LOGIN"
               )}
-            </Button>
-          </form>
+            </button>
 
-          {/* Switch to register */}
-          <div className="mt-4 text-center">
-            <span className="font-body text-sm text-muted-foreground">
-              Don&apos;t have an account?{" "}
-            </span>
+            {/* Register button */}
             <button
               type="button"
               data-ocid="login.go_to_register_button"
@@ -216,11 +287,17 @@ export function LoginModal({ open, onClose, onGoToRegister }: LoginModalProps) {
                 handleClose();
                 onGoToRegister();
               }}
-              className="font-body text-sm text-primary hover:text-primary/80 transition-colors font-medium underline underline-offset-2"
+              className="w-full py-2.5 rounded font-bold text-sm tracking-wide transition-all hover:opacity-90 active:scale-[0.98]"
+              style={{
+                background: "#1976d2",
+                color: "#ffffff",
+                fontFamily: '"Bricolage Grotesque", sans-serif',
+                letterSpacing: "0.04em",
+              }}
             >
-              Register
+              register
             </button>
-          </div>
+          </form>
         </div>
       </DialogContent>
     </Dialog>

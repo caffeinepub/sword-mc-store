@@ -28,6 +28,7 @@ export function Navbar({
 }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [adminPendingCount, setAdminPendingCount] = useState(0);
   const { user, isLoggedIn, logout } = useAuth();
 
   useEffect(() => {
@@ -35,6 +36,37 @@ export function Navbar({
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (!user?.isAdmin) {
+      setAdminPendingCount(0);
+      return;
+    }
+
+    function getPendingCount(): number {
+      try {
+        const raw = localStorage.getItem("swordmc_pending_payments");
+        if (!raw) return 0;
+        const payments = JSON.parse(raw) as { status: string }[];
+        return payments.filter((p) => p.status === "pending").length;
+      } catch {
+        return 0;
+      }
+    }
+
+    setAdminPendingCount(getPendingCount());
+    const interval = setInterval(
+      () => setAdminPendingCount(getPendingCount()),
+      5000,
+    );
+    const handleStorage = () => setAdminPendingCount(getPendingCount());
+    window.addEventListener("storage", handleStorage);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("storage", handleStorage);
+    };
+  }, [user?.isAdmin]);
 
   const scrollTo = (id: string) => {
     setMobileOpen(false);
@@ -124,15 +156,25 @@ export function Navbar({
                     className="flex items-center gap-1.5"
                   >
                     {/* Username chip */}
-                    <button
-                      type="button"
-                      data-ocid="auth.user_button"
-                      onClick={onProfileOpen}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20 hover:border-primary/50 transition-all text-xs font-mono font-bold"
-                    >
-                      <User className="w-3 h-3" />
-                      {user.username}
-                    </button>
+                    <div className="relative">
+                      <button
+                        type="button"
+                        data-ocid="auth.user_button"
+                        onClick={onProfileOpen}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20 hover:border-primary/50 transition-all text-xs font-mono font-bold"
+                      >
+                        <User className="w-3 h-3" />
+                        {user.username}
+                      </button>
+                      {user.isAdmin && adminPendingCount > 0 && (
+                        <span
+                          data-ocid="admin.notification_badge"
+                          className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[9px] font-bold font-mono flex items-center justify-center border-2 border-card animate-pulse pointer-events-none"
+                        >
+                          {adminPendingCount > 99 ? "99+" : adminPendingCount}
+                        </span>
+                      )}
+                    </div>
                     {/* Quick logout */}
                     <Button
                       data-ocid="auth.logout_button"
@@ -266,18 +308,28 @@ export function Navbar({
               <div className="pt-2 mt-1 border-t border-border flex flex-col gap-1.5">
                 {isLoggedIn && user ? (
                   <>
-                    <button
-                      type="button"
-                      data-ocid="auth.user_button"
-                      onClick={() => {
-                        setMobileOpen(false);
-                        onProfileOpen();
-                      }}
-                      className="w-full text-left px-3 py-2 rounded text-sm font-body font-medium text-primary hover:bg-primary/10 transition-colors flex items-center gap-2"
-                    >
-                      <User className="w-4 h-4" />
-                      {user.username}
-                    </button>
+                    <div className="relative">
+                      <button
+                        type="button"
+                        data-ocid="auth.mobile_user_button"
+                        onClick={() => {
+                          setMobileOpen(false);
+                          onProfileOpen();
+                        }}
+                        className="w-full text-left px-3 py-2 rounded text-sm font-body font-medium text-primary hover:bg-primary/10 transition-colors flex items-center gap-2"
+                      >
+                        <User className="w-4 h-4" />
+                        {user.username}
+                        {user.isAdmin && adminPendingCount > 0 && (
+                          <span
+                            data-ocid="admin.mobile_notification_badge"
+                            className="ml-auto min-w-[20px] h-[20px] px-1.5 rounded-full bg-red-500 text-white text-[10px] font-bold font-mono flex items-center justify-center animate-pulse"
+                          >
+                            {adminPendingCount > 99 ? "99+" : adminPendingCount}
+                          </span>
+                        )}
+                      </button>
+                    </div>
                     <button
                       type="button"
                       data-ocid="auth.logout_button"

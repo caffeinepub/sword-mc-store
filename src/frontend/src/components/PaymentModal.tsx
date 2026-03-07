@@ -20,6 +20,7 @@ export interface PendingPayment {
   submittedAt: string;
   username: string;
   email: string;
+  ign?: string;
   status: "pending" | "approved" | "rejected";
 }
 
@@ -106,6 +107,12 @@ export function PaymentModal({
                 email?: string;
               } | null
             )?.email ?? "Unknown",
+          ign:
+            (
+              JSON.parse(localStorage.getItem("swordmc_session") ?? "null") as {
+                ign?: string;
+              } | null
+            )?.ign ?? undefined,
           status: "pending",
         };
         localStorage.setItem(

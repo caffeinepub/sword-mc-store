@@ -199,6 +199,12 @@ export function AdminPanel({ open, onClose }: AdminPanelProps) {
                           <span className="font-mono text-xs text-muted-foreground">
                             {payment.email}
                           </span>
+                          <span
+                            data-ocid={`admin.payment.ign.${i + 1}`}
+                            className="font-mono text-xs text-muted-foreground"
+                          >
+                            IGN: {payment.ign ?? "—"}
+                          </span>
                         </div>
                         <div className="flex items-center gap-1.5 shrink-0">
                           {/* Rank badge */}
@@ -253,14 +259,19 @@ export function AdminPanel({ open, onClose }: AdminPanelProps) {
                           type="button"
                           data-ocid={`admin.payment.screenshot.${i + 1}`}
                           onClick={() => setPreviewPayment(payment)}
-                          className="w-16 h-16 rounded-lg overflow-hidden border border-border/60 shrink-0 hover:border-primary/50 hover:ring-2 hover:ring-primary/20 transition-all"
+                          className="flex flex-col items-center gap-1 shrink-0 group"
                           title="View screenshot"
                         >
-                          <img
-                            src={payment.screenshotDataUrl}
-                            alt="Payment screenshot"
-                            className="w-full h-full object-cover"
-                          />
+                          <div className="w-16 h-14 rounded-lg overflow-hidden border border-border/60 hover:border-primary/50 hover:ring-2 hover:ring-primary/20 transition-all">
+                            <img
+                              src={payment.screenshotDataUrl}
+                              alt="Payment screenshot"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <span className="font-mono text-[9px] text-muted-foreground group-hover:text-primary transition-colors text-center leading-tight">
+                            View Screenshot
+                          </span>
                         </button>
                         <div className="flex flex-col gap-1 flex-1 min-w-0">
                           <p className="font-mono text-[10px] text-muted-foreground truncate">
