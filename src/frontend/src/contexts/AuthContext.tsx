@@ -40,6 +40,7 @@ interface AuthContextType {
     ign?: string;
     avatarDataUrl?: string;
   }) => Promise<void>;
+  resetPassword: (email: string, newPassword: string) => Promise<void>;
 }
 
 const USERS_KEY = "swordmc_users";
@@ -224,6 +225,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  const resetPassword = useCallback(
+    async (email: string, newPassword: string): Promise<void> => {
+      const users = getStoredUsers();
+      const idx = users.findIndex(
+        (u) => u.email.toLowerCase() === email.toLowerCase(),
+      );
+      if (idx === -1) {
+        throw new Error("No account found with that email address.");
+      }
+      users[idx] = { ...users[idx], passwordHash: hashPassword(newPassword) };
+      saveUsers(users);
+    },
+    [],
+  );
+
   const purchaseRank = useCallback((rankName: string) => {
     setUser((prev) => {
       if (!prev) return prev;
@@ -279,6 +295,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         logout,
         purchaseRank,
         updateProfile,
+        resetPassword,
       }}
     >
       {children}
