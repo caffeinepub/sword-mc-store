@@ -1,0 +1,221 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Bricolage Grotesque - Display */
+@font-face {
+  font-family: "Bricolage Grotesque";
+  src: url("/assets/fonts/BricolageGrotesque-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* JetBrains Mono - Code/Accents */
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/assets/fonts/JetBrainsMono-Variable.woff2") format("woff2");
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Outfit - Body */
+@font-face {
+  font-family: "Outfit";
+  src: url("/assets/fonts/Outfit-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  :root {
+    --radius: 0.375rem;
+
+    /* === Sword MC Dark Theme — Red/Crimson === */
+    /* Backgrounds — deep dark red/maroon */
+    --background: 0.10 0.03 15;
+    --foreground: 0.95 0.01 95;
+
+    /* Cards — slightly lighter dark red */
+    --card: 0.14 0.04 15;
+    --card-foreground: 0.92 0.01 95;
+
+    /* Popovers */
+    --popover: 0.16 0.04 12;
+    --popover-foreground: 0.92 0.01 95;
+
+    /* Primary — diamond cyan (matches cyan hearts in image) */
+    --primary: 0.78 0.14 195;
+    --primary-foreground: 0.08 0.015 15;
+
+    /* Secondary — dark crimson */
+    --secondary: 0.20 0.06 15;
+    --secondary-foreground: 0.85 0.01 95;
+
+    /* Muted */
+    --muted: 0.18 0.05 15;
+    --muted-foreground: 0.60 0.03 15;
+
+    /* Accent — bright red/orange */
+    --accent: 0.60 0.20 25;
+    --accent-foreground: 0.95 0.01 95;
+
+    /* Destructive — deep red */
+    --destructive: 0.55 0.22 20;
+    --destructive-foreground: 0.98 0.005 95;
+
+    /* Borders & inputs */
+    --border: 0.25 0.06 15;
+    --input: 0.20 0.05 15;
+    --ring: 0.68 0.13 195;
+
+    /* Gold accent */
+    --gold: 0.82 0.16 80;
+    --gold-foreground: 0.10 0.03 15;
+
+    /* Charts */
+    --chart-1: 0.78 0.14 195;
+    --chart-2: 0.60 0.20 25;
+    --chart-3: 0.75 0.15 80;
+    --chart-4: 0.55 0.22 20;
+    --chart-5: 0.72 0.12 145;
+
+    /* Sidebar */
+    --sidebar: 0.12 0.04 15;
+    --sidebar-foreground: 0.92 0.01 95;
+    --sidebar-primary: 0.78 0.14 195;
+    --sidebar-primary-foreground: 0.08 0.015 15;
+    --sidebar-accent: 0.20 0.06 15;
+    --sidebar-accent-foreground: 0.92 0.01 95;
+    --sidebar-border: 0.25 0.06 15;
+    --sidebar-ring: 0.68 0.13 195;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: "Outfit", sans-serif;
+    font-weight: 400;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-weight: 700;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: oklch(var(--background));
+}
+::-webkit-scrollbar-thumb {
+  background: oklch(var(--border));
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(var(--accent));
+}
+
+/* Pixel grid texture overlay */
+.pixel-texture {
+  background-image: 
+    linear-gradient(oklch(1 0 0 / 2%) 1px, transparent 1px),
+    linear-gradient(90deg, oklch(1 0 0 / 2%) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+/* Enchantment glow effect */
+.enchant-glow {
+  box-shadow: 0 0 20px oklch(0.60 0.20 25 / 40%), 0 0 40px oklch(0.60 0.20 25 / 20%);
+}
+
+/* Diamond glow */
+.diamond-glow {
+  box-shadow: 0 0 20px oklch(0.78 0.14 195 / 40%), 0 0 40px oklch(0.78 0.14 195 / 20%);
+}
+
+/* Gold glow */
+.gold-glow {
+  box-shadow: 0 0 20px oklch(0.82 0.16 80 / 40%), 0 0 40px oklch(0.82 0.16 80 / 20%);
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, oklch(0.80 0.20 25), oklch(0.70 0.18 40));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Category gradients for product cards */
+.cat-diamond {
+  background: linear-gradient(135deg, oklch(0.22 0.06 195), oklch(0.16 0.05 15));
+  border-color: oklch(0.55 0.12 195 / 60%);
+}
+.cat-netherite {
+  background: linear-gradient(135deg, oklch(0.18 0.05 15), oklch(0.12 0.04 10));
+  border-color: oklch(0.40 0.08 15 / 60%);
+}
+.cat-iron {
+  background: linear-gradient(135deg, oklch(0.22 0.03 20), oklch(0.16 0.02 15));
+  border-color: oklch(0.50 0.05 20 / 60%);
+}
+.cat-golden {
+  background: linear-gradient(135deg, oklch(0.28 0.08 60), oklch(0.18 0.05 15));
+  border-color: oklch(0.75 0.16 80 / 60%);
+}
+.cat-enchanted {
+  background: linear-gradient(135deg, oklch(0.22 0.08 25), oklch(0.16 0.06 15));
+  border-color: oklch(0.60 0.20 25 / 60%);
+}
+.cat-wood {
+  background: linear-gradient(135deg, oklch(0.24 0.06 40), oklch(0.16 0.04 20));
+  border-color: oklch(0.50 0.10 40 / 60%);
+}
+.cat-stone {
+  background: linear-gradient(135deg, oklch(0.20 0.03 15), oklch(0.14 0.02 10));
+  border-color: oklch(0.38 0.05 15 / 60%);
+}
+.cat-default {
+  background: linear-gradient(135deg, oklch(0.18 0.05 15), oklch(0.14 0.04 12));
+  border-color: oklch(0.30 0.06 15 / 60%);
+}
+
+/* Minecraft-style corner decoration */
+.mc-corner {
+  position: relative;
+}
+.mc-corner::before,
+.mc-corner::after {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-color: oklch(var(--primary));
+  border-style: solid;
+  opacity: 0.6;
+}
+.mc-corner::before {
+  top: -1px;
+  left: -1px;
+  border-width: 2px 0 0 2px;
+}
+.mc-corner::after {
+  bottom: -1px;
+  right: -1px;
+  border-width: 0 2px 2px 0;
+}

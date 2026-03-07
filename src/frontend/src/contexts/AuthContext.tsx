@@ -1,0 +1,229 @@
+import {
+  type ReactNode,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+
+export interface User {
+  username: string;
+  email: string;
+  ign: string;
+  role: "player" | "vip" | "mvip" | "sword" | "immortal";
+  purchasedRanks: string[];
+}
+
+interface StoredUser extends User {
+  passwordHash: string;
+}
+
+interface AuthContextType {
+  user: User | null;
+  isLoggedIn: boolean;
+  register: (
+    username: string,
+    email: string,
+    password: string,
+    ign?: string,
+  ) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => void;
+  purchaseRank: (rankName: string) => void;
+}
+
+const USERS_KEY = "swordmc_users";
+const SESSION_KEY = "swordmc_session";
+
+function hashPassword(password: string): string {
+  // Simple deterministic hash for localStorage-only auth
+  let hash = 0;
+  const str = `${password}swordmc_salt_v1`;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash = hash & hash;
+  }
+  return hash.toString(36);
+}
+
+function getStoredUsers(): StoredUser[] {
+  try {
+    const raw = localStorage.getItem(USERS_KEY);
+    return raw ? (JSON.parse(raw) as StoredUser[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveUsers(users: StoredUser[]): void {
+  localStorage.setItem(USERS_KEY, JSON.stringify(users));
+}
+
+function getStoredSession(): User | null {
+  try {
+    const raw = localStorage.getItem(SESSION_KEY);
+    return raw ? (JSON.parse(raw) as User) : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveSession(user: User): void {
+  localStorage.setItem(SESSION_KEY, JSON.stringify(user));
+}
+
+function clearSession(): void {
+  localStorage.removeItem(SESSION_KEY);
+}
+
+const AuthContext = createContext<AuthContextType | null>(null);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(() => getStoredSession());
+
+  useEffect(() => {
+    // Sync user changes to session storage
+    if (user) {
+      saveSession(user);
+    }
+  }, [user]);
+
+  const register = useCallback(
+    async (
+      username: string,
+      email: string,
+      password: string,
+      ign = "",
+    ): Promise<void> => {
+      const users = getStoredUsers();
+
+      if (users.some((u) => u.email.toLowerCase() === email.toLowerCase())) {
+        throw new Error("An account with this email already exists.");
+      }
+      if (
+        users.some((u) => u.username.toLowerCase() === username.toLowerCase())
+      ) {
+        throw new Error("Username is already taken.");
+      }
+
+      const newUser: StoredUser = {
+        username,
+        email: email.toLowerCase(),
+        ign: ign || username,
+        role: "player",
+        purchasedRanks: [],
+        passwordHash: hashPassword(password),
+      };
+
+      saveUsers([...users, newUser]);
+
+      const sessionUser: User = {
+        username: newUser.username,
+        email: newUser.email,
+        ign: newUser.ign,
+        role: newUser.role,
+        purchasedRanks: newUser.purchasedRanks,
+      };
+      saveSession(sessionUser);
+      setUser(sessionUser);
+    },
+    [],
+  );
+
+  const login = useCallback(
+    async (email: string, password: string): Promise<void> => {
+      const users = getStoredUsers();
+      const found = users.find(
+        (u) => u.email.toLowerCase() === email.toLowerCase(),
+      );
+
+      if (!found || found.passwordHash !== hashPassword(password)) {
+        throw new Error("Invalid email or password.");
+      }
+
+      const sessionUser: User = {
+        username: found.username,
+        email: found.email,
+        ign: found.ign,
+        role: found.role,
+        purchasedRanks: found.purchasedRanks,
+      };
+      saveSession(sessionUser);
+      setUser(sessionUser);
+    },
+    [],
+  );
+
+  const logout = useCallback(() => {
+    clearSession();
+    setUser(null);
+  }, []);
+
+  const purchaseRank = useCallback((rankName: string) => {
+    setUser((prev) => {
+      if (!prev) return prev;
+      if (prev.purchasedRanks.includes(rankName)) return prev;
+
+      const rankRoleMap: Record<string, User["role"]> = {
+        VIP: "vip",
+        MVIP: "mvip",
+        Sword: "sword",
+        Immortal: "immortal",
+      };
+
+      const rankOrder: User["role"][] = [
+        "player",
+        "vip",
+        "mvip",
+        "sword",
+        "immortal",
+      ];
+      const currentIndex = rankOrder.indexOf(prev.role);
+      const newRankRole = rankRoleMap[rankName] ?? prev.role;
+      const newRankIndex = rankOrder.indexOf(newRankRole);
+      const updatedRole = newRankIndex > currentIndex ? newRankRole : prev.role;
+
+      const updated: User = {
+        ...prev,
+        purchasedRanks: [...prev.purchasedRanks, rankName],
+        role: updatedRole,
+      };
+
+      // Persist to users list
+      const users = getStoredUsers();
+      const idx = users.findIndex(
+        (u) => u.email.toLowerCase() === updated.email.toLowerCase(),
+      );
+      if (idx !== -1) {
+        users[idx] = { ...users[idx], ...updated };
+        saveUsers(users);
+      }
+
+      saveSession(updated);
+      return updated;
+    });
+  }, []);
+
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        isLoggedIn: !!user,
+        register,
+        login,
+        logout,
+        purchaseRank,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth(): AuthContextType {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
+  return ctx;
+}
