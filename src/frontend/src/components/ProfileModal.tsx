@@ -7,12 +7,37 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { Crown, LogOut, Skull, Star, Sword, Swords, User } from "lucide-react";
+import {
+  Crown,
+  LogOut,
+  Settings,
+  Shield,
+  Skull,
+  Star,
+  Sword,
+  Swords,
+  User,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
+
+const PAYMENTS_KEY = "swordmc_pending_payments";
+
+function getPendingCount(): number {
+  try {
+    const raw = localStorage.getItem(PAYMENTS_KEY);
+    if (!raw) return 0;
+    const payments = JSON.parse(raw) as { status: string }[];
+    return payments.filter((p) => p.status === "pending").length;
+  } catch {
+    return 0;
+  }
+}
 
 interface ProfileModalProps {
   open: boolean;
   onClose: () => void;
+  onAdminPanel?: () => void;
 }
 
 const ROLE_CONFIG: Record<
@@ -84,8 +109,19 @@ const RANK_DISPLAY_CONFIG: Record<
   },
 };
 
-export function ProfileModal({ open, onClose }: ProfileModalProps) {
+export function ProfileModal({
+  open,
+  onClose,
+  onAdminPanel,
+}: ProfileModalProps) {
   const { user, logout } = useAuth();
+  const [pendingCount, setPendingCount] = useState(0);
+
+  useEffect(() => {
+    if (open && user?.isAdmin) {
+      setPendingCount(getPendingCount());
+    }
+  }, [open, user?.isAdmin]);
 
   if (!user) return null;
 
@@ -128,18 +164,27 @@ export function ProfileModal({ open, onClose }: ProfileModalProps) {
                 <DialogTitle className="font-display font-extrabold text-xl text-foreground leading-none mb-1">
                   {user.username}
                 </DialogTitle>
-                {/* Role badge */}
-                <span
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono font-bold border"
-                  style={{
-                    color: roleConfig.color,
-                    background: roleConfig.bgColor,
-                    borderColor: roleConfig.borderColor,
-                  }}
-                >
-                  {roleConfig.icon}
-                  {roleConfig.label}
-                </span>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {/* Role badge */}
+                  <span
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono font-bold border"
+                    style={{
+                      color: roleConfig.color,
+                      background: roleConfig.bgColor,
+                      borderColor: roleConfig.borderColor,
+                    }}
+                  >
+                    {roleConfig.icon}
+                    {roleConfig.label}
+                  </span>
+                  {/* Admin badge */}
+                  {user.isAdmin && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono font-bold border border-yellow-500/60 bg-yellow-500/10 text-yellow-400">
+                      <Shield className="w-3 h-3" />
+                      Admin
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           </DialogHeader>
@@ -203,6 +248,27 @@ export function ProfileModal({ open, onClose }: ProfileModalProps) {
               </div>
             )}
           </div>
+
+          {/* Admin Panel button */}
+          {user.isAdmin && onAdminPanel && (
+            <Button
+              data-ocid="profile.admin_panel_button"
+              variant="outline"
+              onClick={() => {
+                onClose();
+                onAdminPanel();
+              }}
+              className="w-full font-display font-bold tracking-wide border-yellow-500/50 text-yellow-400 hover:bg-yellow-500/10 hover:border-yellow-500 transition-all mb-2 relative"
+            >
+              <Settings className="w-4 h-4 mr-2" />
+              Admin Panel
+              {pendingCount > 0 && (
+                <span className="absolute -top-2 -right-2 min-w-[20px] h-5 px-1 rounded-full bg-red-500 text-white text-[10px] font-bold font-mono flex items-center justify-center border-2 border-card">
+                  {pendingCount > 99 ? "99+" : pendingCount}
+                </span>
+              )}
+            </Button>
+          )}
 
           {/* Logout */}
           <Button

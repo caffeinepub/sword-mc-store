@@ -7,12 +7,15 @@ import {
   useState,
 } from "react";
 
+export const ADMIN_EMAIL = "krishdarpan8@gmail.com";
+
 export interface User {
   username: string;
   email: string;
   ign: string;
   role: "player" | "vip" | "mvip" | "sword" | "immortal";
   purchasedRanks: string[];
+  isAdmin?: boolean;
 }
 
 interface StoredUser extends User {
@@ -108,6 +111,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error("Username is already taken.");
       }
 
+      const isAdmin = email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+
       const newUser: StoredUser = {
         username,
         email: email.toLowerCase(),
@@ -115,6 +120,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         role: "player",
         purchasedRanks: [],
         passwordHash: hashPassword(password),
+        isAdmin,
       };
 
       saveUsers([...users, newUser]);
@@ -125,6 +131,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         ign: newUser.ign,
         role: newUser.role,
         purchasedRanks: newUser.purchasedRanks,
+        isAdmin,
       };
       saveSession(sessionUser);
       setUser(sessionUser);
@@ -143,12 +150,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error("Invalid email or password.");
       }
 
+      const isAdmin =
+        found.isAdmin ||
+        found.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+
+      // Persist admin flag if not already set
+      if (!found.isAdmin && isAdmin) {
+        const idx = users.findIndex(
+          (u) => u.email.toLowerCase() === found.email.toLowerCase(),
+        );
+        if (idx !== -1) {
+          users[idx] = { ...users[idx], isAdmin: true };
+          saveUsers(users);
+        }
+      }
+
       const sessionUser: User = {
         username: found.username,
         email: found.email,
         ign: found.ign,
         role: found.role,
         purchasedRanks: found.purchasedRanks,
+        isAdmin,
       };
       saveSession(sessionUser);
       setUser(sessionUser);

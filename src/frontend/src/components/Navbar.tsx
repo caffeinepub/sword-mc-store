@@ -84,6 +84,7 @@ export function Navbar({
               { label: "Home", id: "home", ocid: "nav.home_link" },
               { label: "Shop", id: "shop", ocid: "nav.shop_link" },
               { label: "Ranks", id: "ranks", ocid: "nav.ranks_link" },
+              { label: "Coins", id: "coins", ocid: "nav.coins_link" },
               { label: "About", id: "about", ocid: "nav.about_link" },
             ].map(({ label, id, ocid }) => (
               <button
@@ -237,6 +238,7 @@ export function Navbar({
                 { label: "Home", id: "home", ocid: "nav.home_link" },
                 { label: "Shop", id: "shop", ocid: "nav.shop_link" },
                 { label: "Ranks", id: "ranks", ocid: "nav.ranks_link" },
+                { label: "Coins", id: "coins", ocid: "nav.coins_link" },
                 { label: "About", id: "about", ocid: "nav.about_link" },
               ].map(({ label, id, ocid }) => (
                 <button

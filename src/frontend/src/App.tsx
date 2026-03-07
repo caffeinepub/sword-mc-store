@@ -2,7 +2,9 @@ import { Toaster } from "@/components/ui/sonner";
 import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
 import { AboutSection } from "./components/AboutSection";
+import { AdminPanel } from "./components/AdminPanel";
 import { CartDrawer } from "./components/CartDrawer";
+import { CoinsSection } from "./components/CoinsSection";
 import { Footer } from "./components/Footer";
 import { HeroSection } from "./components/HeroSection";
 import { LoginModal } from "./components/LoginModal";
@@ -40,6 +42,7 @@ function AppContent() {
   const [registerOpen, setRegisterOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [adminPanelOpen, setAdminPanelOpen] = useState(false);
 
   // Data fetching
   const {
@@ -210,6 +213,9 @@ function AppContent() {
         {/* Ranks */}
         <RanksSection />
 
+        {/* Coins */}
+        <CoinsSection />
+
         {/* About */}
         <AboutSection />
       </main>
@@ -254,7 +260,15 @@ function AppContent() {
         onClose={() => setLoginOpen(false)}
         onGoToRegister={handleGoToRegister}
       />
-      <ProfileModal open={profileOpen} onClose={() => setProfileOpen(false)} />
+      <ProfileModal
+        open={profileOpen}
+        onClose={() => setProfileOpen(false)}
+        onAdminPanel={() => setAdminPanelOpen(true)}
+      />
+      <AdminPanel
+        open={adminPanelOpen}
+        onClose={() => setAdminPanelOpen(false)}
+      />
     </div>
   );
 }

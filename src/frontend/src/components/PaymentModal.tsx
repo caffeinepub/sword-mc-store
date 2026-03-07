@@ -11,6 +11,18 @@ import { Check, Copy, ImageIcon, Upload, X } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 
+export interface PendingPayment {
+  id: string;
+  rankName: string;
+  rankPrice: number;
+  screenshotDataUrl: string;
+  screenshotName: string;
+  submittedAt: string;
+  username: string;
+  email: string;
+  status: "pending" | "approved" | "rejected";
+}
+
 interface PaymentModalProps {
   rank: { id: number; name: string; price: number } | null;
   open: boolean;
@@ -66,6 +78,46 @@ export function PaymentModal({
 
   const handleSubmit = () => {
     if (!rank || !screenshotFile) return;
+
+    // Save pending payment to localStorage for admin review
+    try {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const dataUrl = e.target?.result as string;
+        const pending = JSON.parse(
+          localStorage.getItem("swordmc_pending_payments") ?? "[]",
+        ) as PendingPayment[];
+        const entry: PendingPayment = {
+          id: crypto.randomUUID(),
+          rankName: rank.name,
+          rankPrice: rank.price,
+          screenshotDataUrl: dataUrl,
+          screenshotName: screenshotFile.name,
+          submittedAt: new Date().toISOString(),
+          username:
+            (
+              JSON.parse(localStorage.getItem("swordmc_session") ?? "null") as {
+                username?: string;
+              } | null
+            )?.username ?? "Unknown",
+          email:
+            (
+              JSON.parse(localStorage.getItem("swordmc_session") ?? "null") as {
+                email?: string;
+              } | null
+            )?.email ?? "Unknown",
+          status: "pending",
+        };
+        localStorage.setItem(
+          "swordmc_pending_payments",
+          JSON.stringify([...pending, entry]),
+        );
+      };
+      reader.readAsDataURL(screenshotFile);
+    } catch {
+      // Ignore storage errors
+    }
+
     onConfirm(rank.name);
     // Cleanup
     handleRemoveFile();
