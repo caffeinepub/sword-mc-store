@@ -113,8 +113,10 @@ const cardVariants = {
   },
 };
 
+const MAX_PURCHASES = 5;
+
 export function RanksSection() {
-  const { isLoggedIn, user, purchaseRank } = useAuth();
+  const { isLoggedIn, purchaseRank, getPurchaseCount } = useAuth();
   const [paymentRank, setPaymentRank] = useState<Rank | null>(null);
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
 
@@ -127,9 +129,10 @@ export function RanksSection() {
       return;
     }
 
-    if (user?.purchasedRanks.includes(rank.name)) {
-      toast.info(`You already own ${rank.name}!`, {
-        description: "This rank is already active on your account.",
+    const count = getPurchaseCount(rank.name);
+    if (count >= MAX_PURCHASES) {
+      toast.info(`Max purchases reached for ${rank.name}!`, {
+        description: `You have already purchased ${rank.name} ${MAX_PURCHASES} times.`,
         duration: 3000,
       });
       return;
@@ -189,8 +192,8 @@ export function RanksSection() {
           viewport={{ once: true, margin: "-50px" }}
         >
           {ranks.map((rank, i) => {
-            const isOwned =
-              isLoggedIn && user?.purchasedRanks.includes(rank.name);
+            const purchaseCount = isLoggedIn ? getPurchaseCount(rank.name) : 0;
+            const isMaxed = purchaseCount >= MAX_PURCHASES;
 
             return (
               <motion.div
@@ -261,9 +264,11 @@ export function RanksSection() {
                       >
                         {rank.tierLabel}
                       </span>
-                      {isOwned && (
-                        <span className="font-mono text-[10px] uppercase tracking-widest px-2 py-0.5 rounded border border-green-500/40 text-green-400 bg-green-500/10">
-                          Owned
+                      {purchaseCount > 0 && (
+                        <span
+                          className={`font-mono text-[10px] uppercase tracking-widest px-2 py-0.5 rounded border ${isMaxed ? "border-red-500/40 text-red-400 bg-red-500/10" : "border-green-500/40 text-green-400 bg-green-500/10"}`}
+                        >
+                          {purchaseCount}/{MAX_PURCHASES}
                         </span>
                       )}
                     </div>
@@ -279,7 +284,7 @@ export function RanksSection() {
                         ₹{rank.price}
                       </span>
                       <span className="font-mono text-xs text-muted-foreground">
-                        / one-time
+                        / purchase (max {MAX_PURCHASES}x)
                       </span>
                     </div>
                   </div>
@@ -309,11 +314,15 @@ export function RanksSection() {
                   <Button
                     data-ocid={`ranks.purchase_button.${i + 1}`}
                     onClick={() => handlePurchase(rank)}
-                    disabled={isOwned}
+                    disabled={isMaxed}
                     className="w-full mt-2 font-display font-bold text-sm tracking-wide transition-all duration-200 bg-primary/20 border border-primary/60 text-primary hover:bg-primary/30 hover:border-primary/80 hover:text-primary-foreground disabled:opacity-60 disabled:cursor-not-allowed"
                     variant="outline"
                   >
-                    {isOwned ? `✓ ${rank.name} Owned` : `Purchase ${rank.name}`}
+                    {isMaxed
+                      ? `✓ ${rank.name} (${MAX_PURCHASES}/${MAX_PURCHASES})`
+                      : purchaseCount > 0
+                        ? `Purchase Again (${purchaseCount}/${MAX_PURCHASES})`
+                        : `Purchase ${rank.name}`}
                   </Button>
                 </div>
               </motion.div>
@@ -329,8 +338,8 @@ export function RanksSection() {
           transition={{ delay: 0.6 }}
           className="text-center font-mono text-xs text-muted-foreground mt-10"
         >
-          All ranks are permanent. Pay via UPI and upload your screenshot for
-          instant verification.
+          Each rank can be purchased up to {MAX_PURCHASES} times. Pay via UPI
+          and upload your screenshot for instant verification.
         </motion.p>
       </div>
 
@@ -342,14 +351,18 @@ export function RanksSection() {
           setPaymentRank(null);
         }}
         onConfirm={(rankName) => {
+          const count = getPurchaseCount(rankName);
           purchaseRank(rankName);
           setPaymentModalOpen(false);
           setPaymentRank(null);
-          toast.success(`${rankName} Rank — Payment Submitted!`, {
-            description:
-              "Your screenshot is under review. Rank will be activated shortly.",
-            duration: 5000,
-          });
+          toast.success(
+            `${rankName} Rank — Payment Submitted! (x${count + 1})`,
+            {
+              description:
+                "Your screenshot is under review. Rank will be activated shortly.",
+              duration: 5000,
+            },
+          );
         }}
       />
     </section>

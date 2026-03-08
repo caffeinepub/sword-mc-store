@@ -430,11 +430,11 @@ export function ProfileModal({
               {/* Purchased ranks */}
               <div className="mb-5">
                 <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest block mb-2">
-                  Purchased Ranks
+                  Purchased Items
                 </span>
                 {user.purchasedRanks.length === 0 ? (
                   <p className="font-body text-sm text-muted-foreground italic">
-                    No ranks purchased yet.
+                    No items purchased yet.
                   </p>
                 ) : (
                   <div className="flex flex-wrap gap-1.5">
@@ -443,6 +443,7 @@ export function ProfileModal({
                         color: "oklch(0.70 0.03 15)",
                         icon: <Star className="w-3.5 h-3.5" />,
                       };
+                      const count = user.purchaseCounts?.[rank] ?? 1;
                       return (
                         <Badge
                           key={rank}
@@ -456,6 +457,9 @@ export function ProfileModal({
                         >
                           {cfg.icon}
                           {rank}
+                          {count > 1 && (
+                            <span className="ml-0.5 opacity-70">x{count}</span>
+                          )}
                         </Badge>
                       );
                     })}

@@ -16,6 +16,7 @@ export interface User {
   avatarDataUrl?: string;
   role: "player" | "vip" | "mvip" | "sword" | "immortal";
   purchasedRanks: string[];
+  purchaseCounts: Record<string, number>;
   isAdmin?: boolean;
 }
 
@@ -35,6 +36,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   purchaseRank: (rankName: string) => void;
+  getPurchaseCount: (itemName: string) => number;
   updateProfile: (data: {
     username?: string;
     ign?: string;
@@ -126,6 +128,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         ign: ign || username,
         role: "player",
         purchasedRanks: [],
+        purchaseCounts: {},
         passwordHash: hashPassword(password),
         isAdmin,
       };
@@ -138,6 +141,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         ign: newUser.ign,
         role: newUser.role,
         purchasedRanks: newUser.purchasedRanks,
+        purchaseCounts: newUser.purchaseCounts,
         isAdmin,
       };
       saveSession(sessionUser);
@@ -178,6 +182,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         ign: found.ign,
         role: found.role,
         purchasedRanks: found.purchasedRanks,
+        purchaseCounts: found.purchaseCounts ?? {},
         isAdmin,
       };
       saveSession(sessionUser);
@@ -240,10 +245,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  const MAX_PURCHASES = 5;
+
   const purchaseRank = useCallback((rankName: string) => {
     setUser((prev) => {
       if (!prev) return prev;
-      if (prev.purchasedRanks.includes(rankName)) return prev;
+      const currentCount = prev.purchaseCounts?.[rankName] ?? 0;
+      if (currentCount >= MAX_PURCHASES) return prev;
 
       const rankRoleMap: Record<string, User["role"]> = {
         VIP: "vip",
@@ -264,9 +272,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const newRankIndex = rankOrder.indexOf(newRankRole);
       const updatedRole = newRankIndex > currentIndex ? newRankRole : prev.role;
 
+      const newCount = currentCount + 1;
+      const updatedCounts = {
+        ...prev.purchaseCounts,
+        [rankName]: newCount,
+      };
+      // Keep purchasedRanks for backward compatibility (first purchase adds it)
+      const updatedPurchasedRanks = prev.purchasedRanks.includes(rankName)
+        ? prev.purchasedRanks
+        : [...prev.purchasedRanks, rankName];
+
       const updated: User = {
         ...prev,
-        purchasedRanks: [...prev.purchasedRanks, rankName],
+        purchasedRanks: updatedPurchasedRanks,
+        purchaseCounts: updatedCounts,
         role: updatedRole,
       };
 
@@ -285,6 +304,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const getPurchaseCount = useCallback(
+    (itemName: string): number => {
+      return user?.purchaseCounts?.[itemName] ?? 0;
+    },
+    [user],
+  );
+
   return (
     <AuthContext.Provider
       value={{
@@ -294,6 +320,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login,
         logout,
         purchaseRank,
+        getPurchaseCount,
         updateProfile,
         resetPassword,
       }}
