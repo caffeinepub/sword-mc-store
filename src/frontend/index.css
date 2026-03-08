@@ -195,6 +195,17 @@
   border-color: oklch(0.30 0.06 15 / 60%);
 }
 
+/* Sword sweep shimmer */
+@keyframes sword-sweep {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.sword-shimmer {
+  background: linear-gradient(90deg, transparent 0%, oklch(0.78 0.14 195 / 40%) 50%, transparent 100%);
+  background-size: 200% auto;
+  animation: sword-sweep 3s linear infinite;
+}
+
 /* Minecraft-style corner decoration */
 .mc-corner {
   position: relative;

@@ -7,6 +7,7 @@ import { CartDrawer } from "./components/CartDrawer";
 import { CoinsSection } from "./components/CoinsSection";
 import { Footer } from "./components/Footer";
 import { HeroSection } from "./components/HeroSection";
+import { LoadingScreen } from "./components/LoadingScreen";
 import { LoginModal } from "./components/LoginModal";
 import { Navbar } from "./components/Navbar";
 import { ProductDetailModal } from "./components/ProductDetailModal";
@@ -273,10 +274,28 @@ function AppContent() {
   );
 }
 
+function AppWithLoading() {
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <>
+      {!loaded && <LoadingScreen onFinish={() => setLoaded(true)} />}
+      <div
+        style={{
+          opacity: loaded ? 1 : 0,
+          transition: "opacity 0.4s ease",
+          pointerEvents: loaded ? "auto" : "none",
+        }}
+      >
+        <AppContent />
+      </div>
+    </>
+  );
+}
+
 export default function App() {
   return (
     <AuthProvider>
-      <AppContent />
+      <AppWithLoading />
     </AuthProvider>
   );
 }

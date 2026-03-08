@@ -227,7 +227,14 @@ export function Navbar({
               className="relative hover:bg-accent/20 hover:text-primary transition-colors"
               aria-label="Open cart"
             >
-              <ShoppingCart className="w-5 h-5" />
+              <motion.div
+                whileHover={{
+                  rotate: [-5, 5, -3, 3, 0],
+                  transition: { duration: 0.3 },
+                }}
+              >
+                <ShoppingCart className="w-5 h-5" />
+              </motion.div>
               <AnimatePresence>
                 {cartCount > 0 && (
                   <motion.div

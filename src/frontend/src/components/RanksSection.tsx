@@ -152,6 +152,9 @@ export function RanksSection() {
       <div className="absolute top-20 left-10 w-64 h-64 rounded-full bg-[oklch(0.56_0.22_25/8%)] blur-3xl pointer-events-none" />
       <div className="absolute bottom-20 right-10 w-64 h-64 rounded-full bg-[oklch(0.77_0.18_210/8%)] blur-3xl pointer-events-none" />
 
+      {/* Sword sweep shimmer bar */}
+      <div className="sword-shimmer h-px w-full mb-8" />
+
       <div className="container max-w-7xl mx-auto px-4 sm:px-6 relative">
         {/* Section header */}
         <motion.div
@@ -234,7 +237,11 @@ export function RanksSection() {
                 <div className="flex flex-col flex-1 p-5 gap-4">
                   {/* Icon + tier badge */}
                   <div className="flex items-center justify-between">
-                    <div
+                    <motion.div
+                      whileHover={{
+                        rotate: [0, -10, 10, 0],
+                        transition: { duration: 0.4 },
+                      }}
                       className="w-14 h-14 rounded-lg flex items-center justify-center transition-colors duration-300"
                       style={{
                         background: rank.badgeColor,
@@ -242,8 +249,8 @@ export function RanksSection() {
                       }}
                     >
                       {rank.icon}
-                    </div>
-                    <div className="flex flex-col items-end gap-1">
+                    </motion.div>
+                    <div className="flex flex-col items-end gap-1 ml-auto">
                       <span
                         className="font-mono text-[10px] uppercase tracking-widest px-2 py-1 rounded border"
                         style={{

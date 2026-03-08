@@ -74,7 +74,7 @@ export function ProductCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.5, delay: (index - 1) * 0.07 }}
-      whileHover={{ y: -4 }}
+      whileHover={{ y: -4, scale: 1.02, transition: { duration: 0.15 } }}
       className="group relative rounded-lg border overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-card-hover mc-corner"
       style={{ borderColor: "oklch(var(--border))" }}
       onClick={() => onViewDetails(product)}

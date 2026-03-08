@@ -59,9 +59,15 @@ export function ShopSection({
             </span>
             <div className="h-px flex-1 max-w-24 bg-gradient-to-l from-transparent to-border" />
           </div>
-          <h2 className="font-display font-extrabold text-4xl sm:text-5xl gradient-text mb-3">
+          <motion.h2
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="font-display font-extrabold text-4xl sm:text-5xl gradient-text mb-3"
+          >
             The Shop
-          </h2>
+          </motion.h2>
           <p className="text-muted-foreground font-body text-base max-w-xl mx-auto">
             Browse our full collection of legendary Minecraft weapons. From
             humble wooden sticks to god-tier netherite blades.

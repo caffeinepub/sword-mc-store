@@ -146,7 +146,16 @@ export function CoinsSection() {
                     color: COIN_PACKAGE.borderColor,
                   }}
                 >
-                  <Coins className="w-9 h-9" />
+                  <motion.div
+                    animate={{ y: [0, -6, 0] }}
+                    transition={{
+                      duration: 1.8,
+                      repeat: Number.POSITIVE_INFINITY,
+                      ease: "easeInOut",
+                    }}
+                  >
+                    <Coins className="w-9 h-9" />
+                  </motion.div>
                 </div>
                 <div className="flex flex-col items-end gap-1">
                   <span

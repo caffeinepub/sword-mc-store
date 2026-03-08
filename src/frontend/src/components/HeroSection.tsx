@@ -90,10 +90,18 @@ export function HeroSection({ onShopNow }: HeroSectionProps) {
           className="flex items-center justify-center gap-2 mb-6"
         >
           <div className="h-px w-12 bg-gradient-to-r from-transparent to-primary/60" />
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-primary/30 bg-primary/10 text-xs font-mono font-medium text-primary tracking-widest uppercase">
+          <motion.div
+            animate={{ scale: [1, 1.04, 1] }}
+            transition={{
+              duration: 3,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+            }}
+            className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-primary/30 bg-primary/10 text-xs font-mono font-medium text-primary tracking-widest uppercase"
+          >
             <Sparkles className="w-3 h-3" />
             Legendary Gear Shop
-          </div>
+          </motion.div>
           <div className="h-px w-12 bg-gradient-to-l from-transparent to-primary/60" />
         </motion.div>
 
@@ -112,9 +120,14 @@ export function HeroSection({ onShopNow }: HeroSectionProps) {
 
         {/* Feature pills */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.65 }}
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: {},
+            visible: {
+              transition: { staggerChildren: 0.1, delayChildren: 0.65 },
+            },
+          }}
           className="flex flex-wrap items-center justify-center gap-3 mb-10"
         >
           {[
@@ -122,13 +135,17 @@ export function HeroSection({ onShopNow }: HeroSectionProps) {
             { icon: Shield, label: "Enchanted Gear" },
             { icon: Sparkles, label: "Netherite Blades" },
           ].map(({ icon: Icon, label }) => (
-            <div
+            <motion.div
               key={label}
+              variants={{
+                hidden: { opacity: 0, x: -20 },
+                visible: { opacity: 1, x: 0, transition: { duration: 0.4 } },
+              }}
               className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-[oklch(1_0_0/5%)] border border-[oklch(1_0_0/10%)] text-sm text-muted-foreground font-body"
             >
               <Icon className="w-4 h-4 text-primary" />
               {label}
-            </div>
+            </motion.div>
           ))}
         </motion.div>
 
