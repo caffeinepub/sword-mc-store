@@ -71,7 +71,18 @@ export function AboutSection() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.12 }}
               whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
-              className="relative p-6 rounded-lg border border-border bg-card mc-corner group hover:border-primary/40 transition-colors duration-300"
+              className="relative p-6 rounded-lg border border-border bg-card mc-corner group hover:border-primary/50 transition-all duration-300"
+              style={{
+                transition:
+                  "border-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.boxShadow =
+                  "0 0 20px oklch(0.78 0.14 195 / 35%), 0 0 45px oklch(0.78 0.14 195 / 15%), inset 0 0 20px oklch(0.78 0.14 195 / 5%)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.boxShadow = "none";
+              }}
             >
               <motion.div
                 whileHover={{

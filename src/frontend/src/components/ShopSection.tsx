@@ -65,6 +65,10 @@ export function ShopSection({
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
             className="font-display font-extrabold text-4xl sm:text-5xl gradient-text mb-3"
+            style={{
+              filter:
+                "drop-shadow(0 0 12px oklch(0.78 0.14 195 / 0.35)) drop-shadow(0 0 30px oklch(0.78 0.14 195 / 0.15))",
+            }}
           >
             The Shop
           </motion.h2>
@@ -190,18 +194,42 @@ export function ShopSection({
 
             {/* Product grid */}
             {filtered.length > 0 && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              <motion.div
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
+                variants={{
+                  hidden: {},
+                  visible: { transition: { staggerChildren: 0.07 } },
+                }}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-60px" }}
+              >
                 {filtered.map((product, i) => (
-                  <ProductCard
+                  <motion.div
                     key={product.id.toString()}
-                    product={product}
-                    index={i + 1}
-                    onAddToCart={onAddToCart}
-                    onViewDetails={onViewDetails}
-                    isAddingToCart={addingProductId === product.id}
-                  />
+                    variants={{
+                      hidden: { opacity: 0, y: 24, scale: 0.96 },
+                      visible: {
+                        opacity: 1,
+                        y: 0,
+                        scale: 1,
+                        transition: {
+                          duration: 0.45,
+                          ease: [0.22, 1, 0.36, 1] as const,
+                        },
+                      },
+                    }}
+                  >
+                    <ProductCard
+                      product={product}
+                      index={i + 1}
+                      onAddToCart={onAddToCart}
+                      onViewDetails={onViewDetails}
+                      isAddingToCart={addingProductId === product.id}
+                    />
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             )}
 
             {/* Product count */}

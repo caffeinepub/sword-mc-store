@@ -98,6 +98,9 @@ export function Navbar({
                 src="/assets/uploads/file_000000008b1c71fab2567310eb084cc5-1-1.png"
                 alt="Sword MC Logo"
                 className="w-10 h-10 object-contain"
+                style={{
+                  filter: "drop-shadow(0 0 8px oklch(0.78 0.14 195 / 0.4))",
+                }}
               />
             </div>
             <div className="flex flex-col leading-none">
@@ -224,7 +227,14 @@ export function Navbar({
               variant="ghost"
               size="icon"
               onClick={onCartOpen}
-              className="relative hover:bg-accent/20 hover:text-primary transition-colors"
+              className="relative hover:bg-accent/20 hover:text-primary transition-all duration-300"
+              style={
+                cartCount > 0
+                  ? {
+                      filter: "drop-shadow(0 0 6px oklch(0.78 0.14 195 / 0.5))",
+                    }
+                  : undefined
+              }
               aria-label="Open cart"
             >
               <motion.div

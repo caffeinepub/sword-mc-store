@@ -17,12 +17,14 @@ interface LoadingScreenProps {
   onFinish: () => void;
 }
 
+type Phase = "loading" | "slash" | "split" | "done";
+
 export function LoadingScreen({ onFinish }: LoadingScreenProps) {
   const [progress, setProgress] = useState(0);
   const [tip] = useState(
     () => LOADING_TIPS[Math.floor(Math.random() * LOADING_TIPS.length)],
   );
-  const [fadeOut, setFadeOut] = useState(false);
+  const [phase, setPhase] = useState<Phase>("loading");
 
   useEffect(() => {
     // Simulate chunked loading like Minecraft
@@ -50,11 +52,19 @@ export function LoadingScreen({ onFinish }: LoadingScreenProps) {
         if (stageIndex < stages.length) {
           setTimeout(tick, 150); // brief pause between stages
         } else {
-          // Done — fade out after short hold
+          // Done — trigger sword slash after short hold
           setTimeout(() => {
-            setFadeOut(true);
-            setTimeout(onFinish, 600);
-          }, 400);
+            setPhase("slash");
+            // After slash draws (300ms), start split
+            setTimeout(() => {
+              setPhase("split");
+              // After split animation (350ms), call onFinish
+              setTimeout(() => {
+                setPhase("done");
+                onFinish();
+              }, 350);
+            }, 300);
+          }, 300);
         }
       }
     };
@@ -63,16 +73,180 @@ export function LoadingScreen({ onFinish }: LoadingScreenProps) {
     return () => clearTimeout(start);
   }, [onFinish]);
 
+  const isSlashing = phase === "slash" || phase === "split" || phase === "done";
+  const isSplitting = phase === "split" || phase === "done";
+  const isDone = phase === "done";
+
+  return (
+    <>
+      {/* Keyframe styles injected inline */}
+      <style>{`
+        @keyframes slashDraw {
+          0% {
+            clip-path: polygon(0% 45%, 0% 55%, 0% 55%, 0% 45%);
+            opacity: 1;
+          }
+          60% {
+            clip-path: polygon(0% 45%, 0% 55%, 100% 45%, 100% 35%);
+            opacity: 1;
+          }
+          100% {
+            clip-path: polygon(0% 45%, 0% 55%, 100% 45%, 100% 35%);
+            opacity: 1;
+          }
+        }
+        @keyframes slashGlow {
+          0% { opacity: 0; }
+          20% { opacity: 1; }
+          80% { opacity: 1; }
+          100% { opacity: 0.4; }
+        }
+        @keyframes splitTop {
+          0% { transform: translateY(0%); }
+          100% { transform: translateY(-100%); }
+        }
+        @keyframes splitBottom {
+          0% { transform: translateY(0%); }
+          100% { transform: translateY(100%); }
+        }
+        @keyframes flashIn {
+          0% { opacity: 0; }
+          40% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes slashLineExtend {
+          0% {
+            transform: scaleX(0) rotate(-8deg);
+            transform-origin: left center;
+            opacity: 0;
+          }
+          10% {
+            opacity: 1;
+          }
+          60% {
+            transform: scaleX(1) rotate(-8deg);
+            transform-origin: left center;
+            opacity: 1;
+          }
+          100% {
+            transform: scaleX(1) rotate(-8deg);
+            transform-origin: left center;
+            opacity: 0.8;
+          }
+        }
+        @keyframes afterglowFade {
+          0% { opacity: 0.6; }
+          100% { opacity: 0; }
+        }
+      `}</style>
+
+      {/* Top half of loading screen (splits up) */}
+      <div
+        className="fixed inset-0 z-[9999] overflow-hidden"
+        style={{
+          ...(isSplitting && {
+            animation: "splitTop 0.35s cubic-bezier(0.4,0,1,1) forwards",
+            clipPath: "polygon(0 0, 100% 0, 100% 52%, 0 52%)",
+          }),
+          ...(!isSplitting && {
+            clipPath: isSlashing
+              ? "polygon(0 0, 100% 0, 100% 52%, 0 52%)"
+              : undefined,
+          }),
+          pointerEvents: isDone ? "none" : "auto",
+        }}
+      >
+        <LoadingContent progress={progress} tip={tip} />
+      </div>
+
+      {/* Bottom half of loading screen (splits down) */}
+      {isSlashing && (
+        <div
+          className="fixed inset-0 z-[9998] overflow-hidden"
+          style={{
+            clipPath: "polygon(0 48%, 100% 48%, 100% 100%, 0 100%)",
+            ...(isSplitting && {
+              animation: "splitBottom 0.35s cubic-bezier(0.4,0,1,1) forwards",
+            }),
+            pointerEvents: "none",
+          }}
+        >
+          <LoadingContent progress={progress} tip={tip} />
+        </div>
+      )}
+
+      {/* Sword slash line overlay */}
+      {isSlashing && (
+        <div
+          className="fixed inset-0 z-[10000] pointer-events-none"
+          style={{ overflow: "hidden" }}
+        >
+          {/* Main slash line */}
+          <div
+            style={{
+              position: "absolute",
+              top: "48%",
+              left: "-10%",
+              width: "120%",
+              height: "3px",
+              background:
+                "linear-gradient(90deg, transparent 0%, rgba(100,220,255,0.3) 5%, #00eeff 20%, #ffffff 50%, #00eeff 80%, rgba(100,220,255,0.3) 95%, transparent 100%)",
+              boxShadow:
+                "0 0 8px 2px #00eeff, 0 0 20px 4px rgba(0,238,255,0.6), 0 0 40px 8px rgba(0,238,255,0.3)",
+              transform: "rotate(-8deg)",
+              transformOrigin: "left center",
+              animation:
+                "slashLineExtend 0.3s cubic-bezier(0.2,0,0.4,1) forwards",
+            }}
+          />
+          {/* Glow afterburn */}
+          <div
+            style={{
+              position: "absolute",
+              top: "46%",
+              left: "-10%",
+              width: "120%",
+              height: "7px",
+              background:
+                "linear-gradient(90deg, transparent 0%, rgba(0,238,255,0.05) 10%, rgba(0,238,255,0.15) 30%, rgba(200,255,255,0.2) 50%, rgba(0,238,255,0.15) 70%, transparent 100%)",
+              transform: "rotate(-8deg)",
+              transformOrigin: "left center",
+              filter: "blur(3px)",
+              animation: "afterglowFade 0.6s ease-out 0.15s forwards",
+              opacity: 0,
+            }}
+          />
+          {/* White flash at impact */}
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: "rgba(200,240,255,0.12)",
+              animation: "flashIn 0.3s ease-out forwards",
+              opacity: 0,
+            }}
+          />
+        </div>
+      )}
+    </>
+  );
+}
+
+/** Pure visual content extracted so both halves can render identically */
+function LoadingContent({
+  progress,
+  tip,
+}: {
+  progress: number;
+  tip: string;
+}) {
   return (
     <div
-      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center transition-opacity duration-600 ${
-        fadeOut ? "opacity-0 pointer-events-none" : "opacity-100"
-      }`}
+      className="absolute inset-0 flex flex-col items-center justify-center"
       style={{
         background: "#0a0a0a",
         imageRendering: "pixelated",
       }}
-      data-ocid="loading_screen.panel"
     >
       {/* Minecraft-style dirt/stone pixel background pattern */}
       <div

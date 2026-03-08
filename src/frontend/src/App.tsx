@@ -276,14 +276,22 @@ function AppContent() {
 
 function AppWithLoading() {
   const [loaded, setLoaded] = useState(false);
+  const [showContent, setShowContent] = useState(false);
+
+  const handleFinish = useCallback(() => {
+    setLoaded(true);
+    // Brief delay so the split panels clear before we show content
+    setTimeout(() => setShowContent(true), 60);
+  }, []);
+
   return (
     <>
-      {!loaded && <LoadingScreen onFinish={() => setLoaded(true)} />}
+      {!loaded && <LoadingScreen onFinish={handleFinish} />}
       <div
         style={{
-          opacity: loaded ? 1 : 0,
-          transition: "opacity 0.4s ease",
-          pointerEvents: loaded ? "auto" : "none",
+          opacity: showContent ? 1 : 0,
+          transition: "opacity 0.35s ease",
+          pointerEvents: showContent ? "auto" : "none",
         }}
       >
         <AppContent />

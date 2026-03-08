@@ -70,15 +70,32 @@ export function HeroSection({ onShopNow }: HeroSectionProps) {
       <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
         {/* Server Logo */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
+          initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.7, delay: 0.1 }}
-          className="flex justify-center mb-4"
+          className="flex justify-center mb-4 relative"
         >
+          {/* Glow aura BEHIND the logo — pulsing cyan ring */}
+          <div
+            className="absolute inset-0 flex items-center justify-center pointer-events-none"
+            aria-hidden="true"
+          >
+            <div
+              className="hero-logo-aura rounded-full"
+              style={{
+                width: "180px",
+                height: "180px",
+                background:
+                  "radial-gradient(circle, oklch(0.78 0.14 195 / 25%) 0%, oklch(0.78 0.14 195 / 10%) 40%, transparent 70%)",
+                filter: "blur(16px)",
+              }}
+            />
+          </div>
+          {/* Static logo — entrance only, no continuous animation */}
           <img
             src="/assets/uploads/file_000000008b1c71fab2567310eb084cc5-1-1.png"
             alt="Sword MC Logo"
-            className="w-48 sm:w-56 md:w-64 object-contain drop-shadow-[0_0_24px_oklch(0.78_0.14_195/0.5)]"
+            className="relative z-10 w-48 sm:w-56 md:w-64 object-contain drop-shadow-[0_0_24px_oklch(0.78_0.14_195/0.5)]"
           />
         </motion.div>
 
@@ -90,18 +107,18 @@ export function HeroSection({ onShopNow }: HeroSectionProps) {
           className="flex items-center justify-center gap-2 mb-6"
         >
           <div className="h-px w-12 bg-gradient-to-r from-transparent to-primary/60" />
-          <motion.div
-            animate={{ scale: [1, 1.04, 1] }}
-            transition={{
-              duration: 3,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
+          <div
+            className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-primary/30 bg-primary/10 text-xs font-mono font-medium text-primary tracking-widest uppercase gradient-text-animated"
+            style={{
+              backgroundClip: "unset",
+              WebkitBackgroundClip: "unset",
+              WebkitTextFillColor: "unset",
+              color: "oklch(0.78 0.14 195)",
             }}
-            className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-primary/30 bg-primary/10 text-xs font-mono font-medium text-primary tracking-widest uppercase"
           >
-            <Sparkles className="w-3 h-3" />
-            Legendary Gear Shop
-          </motion.div>
+            <Sparkles className="w-3 h-3 animate-pulse" />
+            <span className="gradient-text-animated">Legendary Gear Shop</span>
+          </div>
           <div className="h-px w-12 bg-gradient-to-l from-transparent to-primary/60" />
         </motion.div>
 
@@ -160,7 +177,7 @@ export function HeroSection({ onShopNow }: HeroSectionProps) {
             data-ocid="hero.primary_button"
             onClick={onShopNow}
             size="lg"
-            className="h-14 px-10 text-base font-display font-bold tracking-wide bg-primary text-primary-foreground hover:bg-primary/90 diamond-glow transition-all duration-300 hover:scale-105 active:scale-95 rounded-sm"
+            className="h-14 px-10 text-base font-display font-bold tracking-wide bg-primary text-primary-foreground hover:bg-primary/90 diamond-glow btn-glow-pulse transition-all duration-300 hover:scale-105 active:scale-95 rounded-sm"
           >
             <Sword className="w-5 h-5 mr-2" />
             SHOP NOW

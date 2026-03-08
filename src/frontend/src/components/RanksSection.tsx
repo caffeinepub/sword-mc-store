@@ -201,10 +201,10 @@ export function RanksSection() {
                 data-ocid={`ranks.card.${i + 1}`}
                 variants={cardVariants}
                 whileHover={{
-                  y: -6,
+                  y: -8,
                   transition: { duration: 0.2, ease: "easeOut" },
                 }}
-                className="group relative rounded-xl bg-card border border-border overflow-hidden flex flex-col cursor-default"
+                className={`group relative rounded-xl bg-card border overflow-hidden flex flex-col cursor-default transition-all duration-300 ${rank.name === "Sword" ? "sword-rank-glow border-[oklch(0.77_0.18_210/50%)]" : "border-border"}`}
                 style={
                   {
                     "--rank-glow": rank.glowColor,
@@ -212,18 +212,19 @@ export function RanksSection() {
                   } as React.CSSProperties
                 }
               >
-                {/* Hover glow overlay */}
+                {/* Hover glow overlay — more intense */}
                 <div
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none rounded-xl"
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-xl"
                   style={{
-                    boxShadow: `inset 0 0 30px ${rank.glowColor}`,
+                    boxShadow: `inset 0 0 50px ${rank.glowColor}, inset 0 0 20px ${rank.glowColor}`,
                   }}
                 />
-                {/* Hover border highlight */}
+                {/* Hover border highlight — glowing outer box-shadow */}
                 <div
-                  className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                  className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none"
                   style={{
                     border: `1px solid ${rank.borderColor}`,
+                    boxShadow: `0 0 20px ${rank.glowColor}, 0 0 40px ${rank.glowColor.replace("0.25", "0.12").replace("0.30", "0.12").replace("0.35", "0.12")}`,
                   }}
                 />
 
@@ -242,10 +243,11 @@ export function RanksSection() {
                   <div className="flex items-center justify-between">
                     <motion.div
                       whileHover={{
-                        rotate: [0, -10, 10, 0],
-                        transition: { duration: 0.4 },
+                        rotate: [0, -12, 12, -8, 8, 0],
+                        scale: [1, 1.1, 1.1, 1.1, 1.1, 1],
+                        transition: { duration: 0.5 },
                       }}
-                      className="w-14 h-14 rounded-lg flex items-center justify-center transition-colors duration-300"
+                      className="w-14 h-14 rounded-lg flex items-center justify-center transition-all duration-300 group-hover:shadow-[0_0_18px_var(--rank-glow),0_0_35px_var(--rank-glow)]"
                       style={{
                         background: rank.badgeColor,
                         color: rank.borderColor,

@@ -187,18 +187,19 @@ export function CoinsSection() {
                   } as React.CSSProperties
                 }
               >
-                {/* Hover glow overlay */}
+                {/* Hover glow overlay — intense gold glow */}
                 <div
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none rounded-xl"
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-xl"
                   style={{
-                    boxShadow: `inset 0 0 40px ${pkg.glowColor}`,
+                    boxShadow: `inset 0 0 60px ${pkg.glowColor}, inset 0 0 25px ${pkg.glowColor}`,
                   }}
                 />
-                {/* Hover border highlight */}
+                {/* Hover border highlight with outer glow */}
                 <div
-                  className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                  className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none"
                   style={{
                     border: `1px solid ${pkg.borderColor}`,
+                    boxShadow: `0 0 25px ${pkg.glowColor}, 0 0 50px ${pkg.glowColor}`,
                   }}
                 />
 
@@ -230,7 +231,7 @@ export function CoinsSection() {
                   {/* Icon + badge row */}
                   <div className="flex items-center justify-between">
                     <div
-                      className="w-16 h-16 rounded-xl flex items-center justify-center transition-colors duration-300"
+                      className="w-16 h-16 rounded-xl flex items-center justify-center transition-all duration-300 coin-glow"
                       style={{
                         background: pkg.badgeColor,
                         color: pkg.borderColor,
