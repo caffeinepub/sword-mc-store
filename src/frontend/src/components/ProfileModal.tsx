@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import {
+  Calendar,
   Crown,
   LogOut,
   Pencil,
@@ -127,6 +128,7 @@ export function ProfileModal({
   // Edit form state
   const [editUsername, setEditUsername] = useState("");
   const [editIgn, setEditIgn] = useState("");
+  const [editAge, setEditAge] = useState<number | "">("");
   const [editAvatarDataUrl, setEditAvatarDataUrl] = useState<string | null>(
     null,
   );
@@ -146,6 +148,7 @@ export function ProfileModal({
     if (user && editMode) {
       setEditUsername(user.username);
       setEditIgn(user.ign || "");
+      setEditAge(user.age ?? "");
       setEditAvatarDataUrl(user.avatarDataUrl ?? null);
       setEditAvatarFile(null);
     }
@@ -193,6 +196,7 @@ export function ProfileModal({
       await updateProfile({
         username: editUsername.trim(),
         ign: editIgn.trim(),
+        age: editAge !== "" ? Number(editAge) : undefined,
         avatarDataUrl: editAvatarDataUrl ?? undefined,
       });
       setEditMode(false);
@@ -320,6 +324,32 @@ export function ProfileModal({
                 />
               </div>
 
+              {/* Age */}
+              <div className="flex flex-col gap-1.5">
+                <Label
+                  htmlFor="profile-age"
+                  className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest flex items-center gap-1"
+                >
+                  <Calendar className="w-3 h-3" />
+                  Age
+                </Label>
+                <Input
+                  id="profile-age"
+                  data-ocid="profile.age_input"
+                  type="number"
+                  min={1}
+                  max={100}
+                  value={editAge}
+                  onChange={(e) =>
+                    setEditAge(
+                      e.target.value === "" ? "" : Number(e.target.value),
+                    )
+                  }
+                  className="h-9 font-body text-sm bg-background/60 border-border focus-visible:ring-primary/40"
+                  placeholder="Your age"
+                />
+              </div>
+
               {/* Avatar upload */}
               <div className="flex flex-col gap-1.5">
                 <Label className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest">
@@ -423,6 +453,16 @@ export function ProfileModal({
                     {user.ign || "—"}
                   </span>
                 </div>
+
+                <div className="flex flex-col gap-0.5">
+                  <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest flex items-center gap-1">
+                    <Calendar className="w-3 h-3" />
+                    Age
+                  </span>
+                  <span className="font-body text-sm text-foreground/90">
+                    {user.age ? `${user.age} years` : "—"}
+                  </span>
+                </div>
               </div>
 
               <Separator className="bg-border mb-4" />
@@ -497,6 +537,17 @@ export function ProfileModal({
               >
                 <Pencil className="w-4 h-4 mr-2" />
                 Edit Profile
+              </Button>
+
+              {/* Age Profile button */}
+              <Button
+                data-ocid="profile.age_profile_button"
+                variant="outline"
+                onClick={() => setEditMode(true)}
+                className="w-full font-display font-bold tracking-wide border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-500 transition-all mb-2"
+              >
+                <Calendar className="w-4 h-4 mr-2" />
+                Age Profile
               </Button>
 
               {/* Logout */}

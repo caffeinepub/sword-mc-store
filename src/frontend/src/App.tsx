@@ -7,6 +7,7 @@ import { CartDrawer } from "./components/CartDrawer";
 import { CoinsSection } from "./components/CoinsSection";
 import { Footer } from "./components/Footer";
 import { HeroSection } from "./components/HeroSection";
+import { LeaderboardSection } from "./components/LeaderboardSection";
 import { LoadingScreen } from "./components/LoadingScreen";
 import { LoginModal } from "./components/LoginModal";
 import { Navbar } from "./components/Navbar";
@@ -14,6 +15,8 @@ import { ProductDetailModal } from "./components/ProductDetailModal";
 import { ProfileModal } from "./components/ProfileModal";
 import { RanksSection } from "./components/RanksSection";
 import { RegisterModal } from "./components/RegisterModal";
+import { RulesSection } from "./components/RulesSection";
+import { ServerInfoSection } from "./components/ServerInfoSection";
 import { ShopSection } from "./components/ShopSection";
 import { AuthProvider } from "./contexts/AuthContext";
 import {
@@ -216,6 +219,15 @@ function AppContent() {
 
         {/* Coins */}
         <CoinsSection />
+
+        {/* Server Info */}
+        <ServerInfoSection />
+
+        {/* Rules */}
+        <RulesSection />
+
+        {/* Leaderboard */}
+        <LeaderboardSection />
 
         {/* About */}
         <AboutSection />

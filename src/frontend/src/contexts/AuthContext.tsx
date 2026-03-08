@@ -13,6 +13,7 @@ export interface User {
   username: string;
   email: string;
   ign: string;
+  age?: number;
   avatarDataUrl?: string;
   role: "player" | "vip" | "mvip" | "sword" | "immortal";
   purchasedRanks: string[];
@@ -22,6 +23,7 @@ export interface User {
 
 interface StoredUser extends User {
   passwordHash: string;
+  age?: number;
 }
 
 interface AuthContextType {
@@ -40,6 +42,7 @@ interface AuthContextType {
   updateProfile: (data: {
     username?: string;
     ign?: string;
+    age?: number;
     avatarDataUrl?: string;
   }) => Promise<void>;
   resetPassword: (email: string, newPassword: string) => Promise<void>;
@@ -200,6 +203,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async (data: {
       username?: string;
       ign?: string;
+      age?: number;
       avatarDataUrl?: string;
     }): Promise<void> => {
       setUser((prev) => {
@@ -208,6 +212,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           ...prev,
           ...(data.username !== undefined ? { username: data.username } : {}),
           ...(data.ign !== undefined ? { ign: data.ign } : {}),
+          ...(data.age !== undefined ? { age: data.age } : {}),
           ...(data.avatarDataUrl !== undefined
             ? { avatarDataUrl: data.avatarDataUrl }
             : {}),

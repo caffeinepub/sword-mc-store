@@ -120,6 +120,13 @@ export function Navbar({
               { label: "Shop", id: "shop", ocid: "nav.shop_link" },
               { label: "Ranks", id: "ranks", ocid: "nav.ranks_link" },
               { label: "Coins", id: "coins", ocid: "nav.coins_link" },
+              { label: "Server", id: "server-info", ocid: "nav.server_link" },
+              { label: "Rules", id: "rules", ocid: "nav.rules_link" },
+              {
+                label: "Top Players",
+                id: "leaderboard",
+                ocid: "nav.leaderboard_link",
+              },
               { label: "About", id: "about", ocid: "nav.about_link" },
             ].map(({ label, id, ocid }) => (
               <button
@@ -298,6 +305,13 @@ export function Navbar({
                 { label: "Shop", id: "shop", ocid: "nav.shop_link" },
                 { label: "Ranks", id: "ranks", ocid: "nav.ranks_link" },
                 { label: "Coins", id: "coins", ocid: "nav.coins_link" },
+                { label: "Server", id: "server-info", ocid: "nav.server_link" },
+                { label: "Rules", id: "rules", ocid: "nav.rules_link" },
+                {
+                  label: "Top Players",
+                  id: "leaderboard",
+                  ocid: "nav.leaderboard_link",
+                },
                 { label: "About", id: "about", ocid: "nav.about_link" },
               ].map(({ label, id, ocid }) => (
                 <button
