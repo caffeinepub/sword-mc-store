@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useAuth } from "../contexts/AuthContext";
+import { playPurchaseSound } from "../utils/sounds";
 import { PaymentModal } from "./PaymentModal";
 
 interface CoinPackage {
@@ -363,6 +364,7 @@ export function CoinsSection() {
           const count = getPurchaseCount(itemName);
           purchaseRank(itemName);
           setSelectedPackage(null);
+          playPurchaseSound();
           toast.success(`${itemName} — Payment Submitted! 🪙 (x${count + 1})`, {
             description:
               "Your screenshot is under review. Coins will be added shortly.",

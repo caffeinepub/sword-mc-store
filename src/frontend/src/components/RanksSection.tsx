@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useAuth } from "../contexts/AuthContext";
+import { playPurchaseSound } from "../utils/sounds";
 import { PaymentModal } from "./PaymentModal";
 
 interface Rank {
@@ -357,6 +358,7 @@ export function RanksSection() {
           purchaseRank(rankName);
           setPaymentModalOpen(false);
           setPaymentRank(null);
+          playPurchaseSound();
           toast.success(
             `${rankName} Rank — Payment Submitted! (x${count + 1})`,
             {
