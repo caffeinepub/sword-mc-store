@@ -316,7 +316,7 @@ export function RulesSection() {
         >
           Rules are enforced by our staff team. Appeals can be submitted in our{" "}
           <a
-            href="https://discord.gg/kU6qNw6Dk"
+            href="https://discord.gg/w7c6fuA6A"
             target="_blank"
             rel="noopener noreferrer"
             className="text-primary hover:underline"

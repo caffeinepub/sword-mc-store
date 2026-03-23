@@ -93,7 +93,7 @@ export function HeroSection({ onShopNow }: HeroSectionProps) {
       document.getElementById("coins")?.scrollIntoView({ behavior: "smooth" });
     } else if (action === "discord") {
       window.open(
-        "https://discord.gg/kU6qNw6Dk",
+        "https://discord.gg/w7c6fuA6A",
         "_blank",
         "noopener,noreferrer",
       );
@@ -191,7 +191,7 @@ export function HeroSection({ onShopNow }: HeroSectionProps) {
 
         {/* Discord big icon button */}
         <motion.a
-          href="https://discord.gg/kU6qNw6Dk"
+          href="https://discord.gg/w7c6fuA6A"
           target="_blank"
           rel="noopener noreferrer"
           data-ocid="hero.discord_icon_button"

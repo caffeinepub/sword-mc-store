@@ -141,7 +141,7 @@ export function Navbar({
               </button>
             ))}
             <a
-              href="https://discord.gg/kU6qNw6Dk"
+              href="https://discord.gg/w7c6fuA6A"
               target="_blank"
               rel="noopener noreferrer"
               data-ocid="nav.discord_button"
@@ -325,7 +325,7 @@ export function Navbar({
                 </button>
               ))}
               <a
-                href="https://discord.gg/kU6qNw6Dk"
+                href="https://discord.gg/w7c6fuA6A"
                 target="_blank"
                 rel="noopener noreferrer"
                 data-ocid="nav.discord_button"
